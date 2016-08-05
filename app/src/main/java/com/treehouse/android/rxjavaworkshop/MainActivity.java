@@ -25,6 +25,7 @@ import java.util.List;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.subscriptions.CompositeSubscription;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     TodoAdapter adapter;
 
     TodoList list;
+
+    CompositeSubscription subscriptions = new CompositeSubscription();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
         addInput = (EditText) findViewById(R.id.add_todo_input);
         findViewById(R.id.add_todo_container).requestFocus(); // ensures the edittext isn't focused when entering the Activity
 
+
+        //Add all subscriptions to CompositeSub
+
+        subscriptions.add(
         RxView.clicks(findViewById(R.id.add_todo_input))
                 .map(new Func1<Void, String>() {
                     @Override
@@ -105,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                         findViewById(R.id.add_todo_container).requestFocus();
                         dismissKeyboard();
                     }
-                });
+                }));
 
         // setup the toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -116,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
         spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{"All", "Incomplete", "Completed"}));
         //We just want to update the adapter on changes we dont care about the items thats why we skip the
         //first element.
+        //Add Subscript to CompositeSub
+        subscriptions.add(
         rx.Observable.combineLatest(
                 RxAdapterView.itemSelections(spinner).skip(1),
                 list.asObservable(),
@@ -132,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-        ).subscribe(adapter);
+        ).subscribe(adapter));
     }
 
     @Override
@@ -145,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        //unsubscribing all the subscriptions! :)
+        subscriptions.unsubscribe();
         SharedPreferences.Editor editor = getSharedPreferences("data", Context.MODE_PRIVATE).edit();
         editor.putString(LIST, list.toString());
         editor.apply();
