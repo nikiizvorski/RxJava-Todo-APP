@@ -14,10 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.functions.Action1;
 import rx.subjects.ReplaySubject;
 
 //Making Observable ToDoList to Simlify the process!
-public class TodoList {
+public class TodoList implements Action1<Todo> {
 
     private List<Todo> todoList;
 
@@ -52,7 +53,7 @@ public class TodoList {
         notifier.onNext(this);
     }
 
-    public void toggle(Todo t) {
+    private void toggle(Todo t) {
         Todo todo = todoList.get(todoList.indexOf(t));
         boolean curVal = todo.isCompleted;
         todo.isCompleted = !curVal;
@@ -94,6 +95,11 @@ public class TodoList {
 
     public Observable<TodoList> asObservable() {
         return notifier;
+    }
+
+    @Override
+    public void call(Todo todo) {
+        toggle(todo);
     }
 
 

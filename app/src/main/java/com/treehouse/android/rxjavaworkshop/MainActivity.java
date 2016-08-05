@@ -61,12 +61,7 @@ public class MainActivity extends AppCompatActivity {
         //filter = new TodoListFilter(list);
 
         // setup the Adapter, this contains a callback when an item is checked/unchecked
-        adapter = new TodoAdapter(this, new TodoCompletedChangeListener() {
-            @Override
-            public void onTodoCompletedChanged(Todo todo) {
-                list.toggle(todo);
-            }
-        });
+        adapter = new TodoAdapter(this, list);
 
         //Adding Observer!
         //And adding adapter to the observer to notify changes.
