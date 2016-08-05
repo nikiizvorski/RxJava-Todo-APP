@@ -13,10 +13,17 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
+import rx.subjects.ReplaySubject;
+
+//Making Observable ToDoList to Simlify the process!
 public class TodoList {
 
-    private TodoListener listener;
     private List<Todo> todoList;
+
+    //Adding ExSubject as an Observable
+    ReplaySubject<TodoList> notifier = ReplaySubject.create();
+
 
     public TodoList() {
         todoList = new ArrayList<>();
@@ -25,10 +32,6 @@ public class TodoList {
     public TodoList(String json) {
         this();
         readJson(json);
-    }
-
-    public void setListener(TodoListener listener) {
-        this.listener = listener;
     }
 
     public int size() {
@@ -41,26 +44,58 @@ public class TodoList {
 
     public void add(Todo t) {
         todoList.add(t);
-        if (listener != null) {
-            listener.onTodoListChanged(this);
-        }
+        notifier.onNext(this);
     }
 
     public void remove(Todo t) {
         todoList.remove(t);
-        if (listener != null) {
-            listener.onTodoListChanged(this);
-        }
+        notifier.onNext(this);
     }
 
     public void toggle(Todo t) {
         Todo todo = todoList.get(todoList.indexOf(t));
         boolean curVal = todo.isCompleted;
         todo.isCompleted = !curVal;
-        if (listener != null) {
-            listener.onTodoListChanged(this);
-        }
+        notifier.onNext(this);
     }
+
+    public List<Todo> getAll(){
+        return todoList;
+    }
+
+    public List<Todo> inCompleted(){
+        //create a temp Array
+        ArrayList<Todo> incomplete = new ArrayList<>();
+        //make a cycle for all todo in the TodoList
+        for (Todo t: todoList){
+            //check if completed
+            if(!t.isCompleted) {
+                //and add all of the incompleted.
+                incomplete.add(t);
+            }
+        }
+        //return all incompleted
+        return incomplete;
+    }
+
+    public List<Todo> Completed(){
+        //create a temp Array
+        ArrayList<Todo> completed = new ArrayList<>();
+
+        //make a cycle for all todo in the TodoList
+        for(Todo t : todoList){
+            if(t.isCompleted){
+                completed.add(t);
+            }
+        }
+        return completed;
+        //return all incompleted
+    }
+
+    public Observable<TodoList> asObservable() {
+        return notifier;
+    }
+
 
     private void readJson(String json) {
 
