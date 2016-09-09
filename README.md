@@ -1,5 +1,5 @@
 # RxJava-Todo-APP
-RxJava Todo App using the library
+RxJava Todo App using the library RxJava and Butterknife to remove the boilerplate code
 
 ## Getting Started
 
