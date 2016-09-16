@@ -1,6 +1,8 @@
 # RxJava-Todo-APP
 RxJava Todo App using the library RxJava and Butterknife to remove the boilerplate code
 
+![RxJava](http://image.slidesharecdn.com/mobgen-fridaypresentation-160530082602/95/mobgen-android-session-mvp-rx-23-638.jpg?cb=1464596840)
+
 You can get basic understanding how RxJava works and you can use the rxmarbles website to see how everythink works:
 
 http://rxmarbles.com/
